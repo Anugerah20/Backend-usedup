@@ -3,6 +3,7 @@ const userRoute = require('./routes/user.route')
 const cors = require('cors')
 
 const app = express();
+const port = process.env.PORT;
 
 // ini untuk parse request body
 app.use(express.json());
@@ -21,10 +22,7 @@ app.get('/', (req, res) => {
 // route untuk user
 app.use('/api/user', userRoute)
 
-// Route Register
-app.use('/register', userRoute)
-
 // ini untuk untuk memastikan server berjalan di port 3000
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
