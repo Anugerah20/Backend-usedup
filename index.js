@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
 // route untuk user
 app.use('/api/user', userRoute)
 
+// Route Register
+app.use('/register', userRoute)
+
 // ini untuk untuk memastikan server berjalan di port 3000
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
