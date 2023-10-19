@@ -77,13 +77,13 @@ const loginUsers = async(req, res) => {
             return res.status(400).json({ error: 'Wrong email or password' })
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password)
+        const passwordMatch = await bcrypt.compare(password, checkUser.password)
 
         if(passwordMatch) {
             // Token JWT Login
-            const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
 
-            res.json({ message: 'Login Successful', user, token })
+            res.json({ message: 'Login Successful', checkUser, token })
         } else {
             return res.status(401).json({ error: 'Wrong email or password' })
         }
