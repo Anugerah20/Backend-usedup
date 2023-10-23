@@ -3,7 +3,7 @@ const userRoute = require('./routes/user.route')
 const cors = require('cors')
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 // ini untuk parse request body
 app.use(express.json());
