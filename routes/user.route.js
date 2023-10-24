@@ -10,8 +10,6 @@ router.post('/register', registerUser);
 // Route login
 router.post('/login', loginUsers);
 
-router.get('/user', loginUsers);
-
 // Route Contoh
 router.get('/', contohResponse);
 
