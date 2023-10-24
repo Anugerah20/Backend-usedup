@@ -121,21 +121,20 @@ const sendEmailForgotPassword = async (nama, email) => {
 const forgotPassword = async (req, res) => {
     const { email } = req.body
 
-    // TASK
-    // logic cek apakah email ada di database
-    // jika ada, kirim email
+    // logic disini
 
+    // function send email
     // params1: nama user
     // params2: email user
     const response = await sendEmailForgotPassword('Adam', 'raywibowo68@gmail.com')
 
     if (response) {
-        return res.json({ message: 'Email sent!' })
+        return res.json({ message: 'Email berhasil terkirim!' })
     } else {
-        return res.status(400).json({ error: 'Email not sent' })
+        return res.status(400).json({ error: 'Email gagal terkirim!' })
     }
 
-    // jika tidak ada, kirim response error
+    // jika tidak ada, kirim response error / belum terdaftar
 
 }
 
