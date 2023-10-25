@@ -122,20 +122,36 @@ const forgotPassword = async (req, res) => {
     const { email } = req.body
 
     // logic disini
+    const checkUser = await prisma.user.findUnique({
+        where: { email },
+    });
 
-    // function send email
-    // params1: nama user
-    // params2: email user
-    const response = await sendEmailForgotPassword('Adam', 'raywibowo68@gmail.com')
+    console.log(checkUser);
 
-    if (response) {
-        return res.json({ message: 'Email berhasil terkirim!' })
-    } else {
-        return res.status(400).json({ error: 'Email gagal terkirim!' })
+    if (checkUser) {
+
+        const resetPasswordToken = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
+
+        await prisma.user.update({
+            where: { email },
+            data: {
+                token_reset_password: resetPasswordToken,
+            },
+        });
+        // function send email
+        // params1: nama user
+        // params2: email user
+        const response = await sendEmailForgotPassword(checkUser.fullname, checkUser.email)
+    
+        if (response) {
+            return res.json({ message: 'Email berhasil terkirim!' })
+        } else {
+            return res.status(400).json({ error: 'Email gagal terkirim!' })
+        }
+        // jika tidak ada, kirim response error / belum terdaftar
+    } else if (!checkUser){
+        return res.status(400).json({ error: 'belum terdaftar' })
     }
-
-    // jika tidak ada, kirim response error / belum terdaftar
-
 }
 
 // jangan lupa export functionnya

@@ -15,5 +15,6 @@ model User {
   email String @unique
   fullname String?
   password String
+  token_reset_password String?
 }
 
