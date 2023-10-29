@@ -95,13 +95,14 @@ const loginUsers = async (req, res) => {
     }
 }
 // Send Email Forgot Password
-const sendEmailForgotPassword = async (nama, email) => {
+const sendEmailForgotPassword = async (nama, token, email) => {
     let data = {
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_USER_ID,
         template_params: {
             'nama': nama,
+            'token': token,
             'to_email': email
         },
         'accessToken': process.env.EMAILJS_ACCESS_TOKEN
@@ -126,8 +127,6 @@ const forgotPassword = async (req, res) => {
         where: { email },
     });
 
-    console.log(checkUser);
-
     if (checkUser) {
 
         const resetPasswordToken = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
@@ -141,16 +140,40 @@ const forgotPassword = async (req, res) => {
         // function send email
         // params1: nama user
         // params2: email user
-        const response = await sendEmailForgotPassword(checkUser.fullname, checkUser.email)
-    
+        const response = await sendEmailForgotPassword(checkUser.fullname, resetPasswordToken, checkUser.email)
+
         if (response) {
             return res.json({ message: 'Email berhasil terkirim!' })
         } else {
             return res.status(400).json({ error: 'Email gagal terkirim!' })
         }
         // jika tidak ada, kirim response error / belum terdaftar
-    } else if (!checkUser){
+    } else if (!checkUser) {
         return res.status(400).json({ error: 'belum terdaftar' })
+    }
+}
+
+const checkToken = async (req, res) => {
+    const { token } = req.body
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+        });
+
+        if (user) {
+            return res.json({
+                message: 'Token valid!',
+                status: true,
+            })
+        }
+    } catch (error) {
+        return res.json({
+            message: 'Token invalid',
+            status: false,
+        })
     }
 }
 
@@ -159,5 +182,6 @@ module.exports = {
     contohResponse,
     registerUser,
     loginUsers,
-    forgotPassword
+    forgotPassword,
+    checkToken
 }
