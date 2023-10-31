@@ -19,7 +19,7 @@ router.post('/forgot-password', forgotPassword);
 router.post('/check-token', checkToken);
 
 // Route updated password
-router.get('/update-password', updatePassword);
+router.post('/update-password', updatePassword);
 
 // Route Contoh
 router.get('/', contohResponse);

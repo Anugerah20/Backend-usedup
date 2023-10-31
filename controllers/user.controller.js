@@ -159,9 +159,19 @@ const checkToken = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        // check if user has token
         const user = await prisma.user.findUnique({
-            where: { id: decoded.userId },
+            where: {
+                id: decoded.userId
+            },
         });
+
+        if (!user.token_reset_password) {
+            return res.json({
+                message: 'Token invalid',
+                status: false,
+            })
+        }
 
         if (user) {
             return res.json({
@@ -178,35 +188,33 @@ const checkToken = async (req, res) => {
 }
 
 // Update Password
-const updatePassword = async(req, res) => {
-    const { userId, currentPassword, newPassword } = req.body;
-    
+const updatePassword = async (req, res) => {
+    const { userId, password } = req.body;
+
     try {
         const user = await prisma.user.findUnique({
             where: { id: userId },
         })
 
-        if(!user) {
+        if (!user) {
             return res.status(400).json({ error: 'User not found' })
         }
 
-        const passwordMatch = await bcrypt.compare(currentPassword, user.password)
-
-        if(!passwordMatch) {
-            return res.status(401).json({ error: 'Current password is incorrect'})
-        }
-
         const saltRounds = 10
-        const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds)
+        const hashedNewPassword = await bcrypt.hash(password, saltRounds)
 
         await prisma.user.update({
             where: { id: userId },
             data: {
                 password: hashedNewPassword,
+                token_reset_password: null,
             },
         })
 
-        res.json({ message: 'Password Updated Successful'})
+        res.json({
+            status: true,
+            message: 'Password Updated Successful'
+        })
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: 'Password Updated Failed' })
