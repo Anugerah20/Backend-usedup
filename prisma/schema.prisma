@@ -18,3 +18,18 @@ model User {
   token_reset_password String?
 }
 
+model Advert {
+  id String @id @default(uuid())
+  title String
+  description String
+  price Int
+  image Json
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+}
+
+model Category {
+  id String @id @default(uuid())
+  name String
+  advert Advert[]
+}
