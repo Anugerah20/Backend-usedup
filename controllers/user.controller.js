@@ -56,8 +56,8 @@ const registerUser = async (req, res) => {
         res.json({ message: 'Registration Successful', user: newUser, token })
 
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: 'Registration Failed' })
+        console.log('Error Registration :', error);
+        res.status(500).json({ error: 'Internal server error' })
     }
 }
 
@@ -233,10 +233,10 @@ const createAdvert = async (req, res) => {
                 price,
                 image,
                 categoryId
-                
+
             },
         })
-        res.status(201).json({advert, message: 'Succesful create advert'})
+        res.status(201).json({ advert, message: 'Succesful create advert' })
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: 'Failed create advert' })
@@ -253,11 +253,26 @@ const createCategory = async (req, res) => {
                 name,
             }
         })
-        res.status(200).json({ category, message: 'Succesful create category'})
+        res.status(200).json({ category, message: 'Succesful create category' })
     } catch (error) {
         console.log(error);
         res.status(400).json({ error: 'Failed create category' })
     }
+}
+
+// Menampilkan data user
+const showDataUser = async (req, res) => {
+    const { id } = req.params;
+    const newUser = await prisma.user.findUnique({
+        where: {
+            id,
+        },
+    });
+    res.json({
+        "id": newUser.id,
+        "email": newUser.email,
+        "fullname": newUser.fullname
+    });
 }
 
 // jangan lupa export functionnya
@@ -269,5 +284,6 @@ module.exports = {
     checkToken,
     updatePassword,
     createAdvert,
-    createCategory
+    createCategory,
+    showDataUser
 }
