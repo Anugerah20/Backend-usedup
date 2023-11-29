@@ -4,7 +4,7 @@ const router = express.Router();
 // tes
 
 // ini import function dari controller
-const { contohResponse, registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory } = require('../controllers/user.controller.js')
+const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser } = require('../controllers/user.controller.js')
 
 // Route Register
 router.post('/register', registerUser);
@@ -27,7 +27,7 @@ router.post('/advert', createAdvert);
 // Route Category
 router.post('/category', createCategory);
 
-// Route Contoh
-router.get('/', contohResponse);
+// Route Get User
+router.get("/:id", showDataUser);
 
 module.exports = router;
