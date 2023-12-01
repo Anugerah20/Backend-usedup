@@ -268,11 +268,18 @@ const showDataUser = async (req, res) => {
             id,
         },
     });
-    res.json({
-        "id": newUser.id,
-        "email": newUser.email,
-        "fullname": newUser.fullname
-    });
+    console.log("New User:", newUser);
+    if (newUser) {
+        res.json({
+          id: newUser.id,
+          email: newUser.email,
+          fullname: newUser.fullname,
+        });
+      } else {
+        res.json({
+          error: "User not found",
+        });
+      }
 }
 
 // jangan lupa export functionnya
