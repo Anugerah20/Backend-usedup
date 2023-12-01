@@ -223,7 +223,9 @@ const updatePassword = async (req, res) => {
 
 // Iklan Produk
 const createAdvert = async (req, res) => {
-    const { title, description, price, image, categoryId } = req.body
+    let { title, description, price, image, categoryId } = req.body
+
+    price = parseInt(price)
 
     try {
         const advert = await prisma.advert.create({
