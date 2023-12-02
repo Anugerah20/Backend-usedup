@@ -1,27 +1,35 @@
 // middleware/protect.route.middleware.js
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.JWT_SECRET;
-
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'];
-
-  console.log('Request Headers:', req.headers);
-
+  
   if (!token) {
     console.log('Token not found');
-    return res.sendStatus(401);
-  }
+    return res.status(401).json({
+      message: 'No Token'
+    });
+  } 
+  const splittedToken = token.split(' ')[1]
 
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) {
+  try {
+    const result = jwt.verify(splittedToken, process.env.JWT_SECRET)
+    
+    if (!result.userId) {
       console.log('Token verification failed');
-      return res.sendStatus(403);
+      res.status(401).json({
+        message: "No Authorized"
+      })
+      return
+    } else {
+      console.log('Token verified successfully');
+      next();
     }
-    req.user = user;
-    console.log('Token verified successfully');
-    next();
-  });
+  } catch (error) {
+    res.status(401).json({
+      message: "No Authorized"
+    })
+  }
 };
 
 module.exports = authenticateToken;

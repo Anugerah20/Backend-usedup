@@ -223,7 +223,8 @@ const updatePassword = async (req, res) => {
 
 // Iklan Produk
 const createAdvert = async (req, res) => {
-    const { title, description, price, image, categoryId } = req.body
+    let { title, description, price, image, categoryId } = req.body
+    price = parseInt(price)
 
     try {
         const advert = await prisma.advert.create({
@@ -268,7 +269,7 @@ const showDataUser = async (req, res) => {
             id,
         },
     });
-    console.log("New User:", newUser);
+    
     if (newUser) {
         res.json({
           id: newUser.id,
