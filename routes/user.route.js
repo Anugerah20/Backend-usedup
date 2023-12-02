@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticateToken = require('../middleware/protect.route.middleware.js')
 
 // tes
 
@@ -13,21 +14,21 @@ router.post('/register', registerUser);
 router.post('/login', loginUsers);
 
 // Route forgot password
-router.post('/forgot-password', forgotPassword);
+router.post('/forgot-password', authenticateToken,forgotPassword);
 
 // Route check token
-router.post('/check-token', checkToken);
+router.post('/check-token', authenticateToken,checkToken);
 
 // Route updated password
-router.post('/update-password', updatePassword);
+router.post('/update-password', authenticateToken,updatePassword);
 
 // Route Advert
-router.post('/advert', createAdvert);
+router.post('/advert', authenticateToken,createAdvert);
 
 // Route Category
-router.post('/category', createCategory);
+router.post('/category', authenticateToken,createCategory);
 
 // Route Get User
-router.get("/:id", showDataUser);
+router.get("/:id", authenticateToken,showDataUser);
 
 module.exports = router;

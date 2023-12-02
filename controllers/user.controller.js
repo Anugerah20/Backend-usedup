@@ -224,7 +224,6 @@ const updatePassword = async (req, res) => {
 // Iklan Produk
 const createAdvert = async (req, res) => {
     let { title, description, price, image, categoryId } = req.body
-
     price = parseInt(price)
 
     try {
@@ -270,11 +269,18 @@ const showDataUser = async (req, res) => {
             id,
         },
     });
-    res.json({
-        "id": newUser.id,
-        "email": newUser.email,
-        "fullname": newUser.fullname
-    });
+    
+    if (newUser) {
+        res.json({
+          id: newUser.id,
+          email: newUser.email,
+          fullname: newUser.fullname,
+        });
+      } else {
+        res.json({
+          error: "User not found",
+        });
+      }
 }
 
 // jangan lupa export functionnya
