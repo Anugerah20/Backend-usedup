@@ -221,46 +221,6 @@ const updatePassword = async (req, res) => {
     }
 }
 
-// Iklan Produk
-const createAdvert = async (req, res) => {
-    let { title, description, price, image, categoryId } = req.body
-    price = parseInt(price)
-
-    try {
-        const advert = await prisma.advert.create({
-            data: {
-                title,
-                description,
-                price,
-                image,
-                categoryId
-
-            },
-        })
-        res.status(201).json({ advert, message: 'Succesful create advert' })
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({ error: 'Failed create advert' })
-    }
-}
-
-// Kategori Produk
-const createCategory = async (req, res) => {
-    const { name } = req.body;
-
-    try {
-        const category = await prisma.category.create({
-            data: {
-                name,
-            }
-        })
-        res.status(200).json({ category, message: 'Succesful create category' })
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: 'Failed create category' })
-    }
-}
-
 // Menampilkan data user
 const showDataUser = async (req, res) => {
     const { id } = req.params;
@@ -291,7 +251,5 @@ module.exports = {
     forgotPassword,
     checkToken,
     updatePassword,
-    createAdvert,
-    createCategory,
     showDataUser
 }

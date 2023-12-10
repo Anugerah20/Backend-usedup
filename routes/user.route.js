@@ -22,12 +22,6 @@ router.post('/check-token', authenticateToken,checkToken);
 // Route updated password
 router.post('/update-password', authenticateToken,updatePassword);
 
-// Route Advert
-router.post('/advert', authenticateToken,createAdvert);
-
-// Route Category
-router.post('/category', authenticateToken,createCategory);
-
 // Route Get User
 router.get("/:id", authenticateToken,showDataUser);
 

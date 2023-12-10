@@ -1,6 +1,7 @@
 const express = require('express');
 const userRoute = require('./routes/user.route')
-const controllerRoute = require('./routes/category.route')
+const categoryRoute = require('./routes/category.route')
+const advertRoute = require('./routes/advert.route')
 const cors = require('cors')
 
 const app = express();
@@ -22,7 +23,8 @@ app.get('/', (req, res) => {
 
 // route untuk user
 app.use('/api/user', userRoute)
-app.use('/api/category', controllerRoute)
+app.use('/api/category', categoryRoute)
+app.use('/api/advert', advertRoute)
 
 // ini untuk untuk memastikan server berjalan di port 3000
 app.listen(port, () => {
