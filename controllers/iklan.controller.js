@@ -34,7 +34,15 @@ const getAdvert = async (req, res) => {
             skip: (page - 1) * pageSize,
             take: parseInt(pageSize),
         })
-        res.json(showAdvert)
+
+        const totalItems = await prisma.advert.count(); // Count total items in the database
+
+        const totalPages = Math.ceil(totalItems / pageSize);
+
+        res.json({
+            showAdvert,
+            totalPages
+        })
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: 'Failed show advert' })
