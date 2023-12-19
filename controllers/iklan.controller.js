@@ -35,7 +35,8 @@ const getAdvert = async (req, res) => {
             take: parseInt(pageSize),
         })
 
-        const totalItems = await prisma.advert.count(); // Count total items in the database
+        // Count total items in the database
+        const totalItems = await prisma.advert.count();
 
         const totalPages = Math.ceil(totalItems / pageSize);
 
