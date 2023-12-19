@@ -27,6 +27,6 @@ app.use('/api/category', categoryRoute)
 app.use('/api/advert', advertRoute)
 
 // ini untuk untuk memastikan server berjalan di port 3000
-app.listen(port || process.env.PORT, () => {
+app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
