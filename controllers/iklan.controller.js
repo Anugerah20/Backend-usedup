@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient()
 
-// Iklan Produk
+// Advert Produk
 const createAdvert = async (req, res) => {
     let { title, description, price, image, categoryId } = req.body
     price = parseInt(price)
@@ -25,6 +25,23 @@ const createAdvert = async (req, res) => {
     }
 }
 
+// Show Advert
+const getAdvert = async (req, res) => {
+    const { page, pageSize } = req.query;
+
+    try {
+        const showAdvert = await prisma.advert.findMany({
+            skip: (page - 1) * pageSize,
+            take: parseInt(pageSize),
+        })
+        res.json(showAdvert)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ error: 'Failed show advert' })
+    }
+}
+
 module.exports = {
-    createAdvert
+    createAdvert,
+    getAdvert
 }
