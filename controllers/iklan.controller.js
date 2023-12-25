@@ -27,30 +27,67 @@ const createAdvert = async (req, res) => {
 
 // Show Advert
 const getAdvert = async (req, res) => {
-    const { page, pageSize } = req.query;
+    const { page, pageSize, id } = req.query;
 
     try {
-        const showAdvert = await prisma.advert.findMany({
-            skip: (page - 1) * pageSize,
-            take: parseInt(pageSize),
-        })
+        if (id) {
+            // Retrieve a specific advert by ID
+            showAdvert = await prisma.advert.findUnique({
+                where: {
+                    id: parseInt(id),
+                },
+            });
 
-        // Count total items in the database
-        const totalItems = await prisma.advert.count();
+        } else {
+            const showAdvert = await prisma.advert.findMany({
+                skip: (page - 1) * pageSize,
+                take: parseInt(pageSize),
+            })
 
-        const totalPages = Math.ceil(totalItems / pageSize);
+            // Count total items in the database
+            const totalItems = await prisma.advert.count();
 
-        res.json({
-            showAdvert,
-            totalPages
-        })
+            const totalPages = Math.ceil(totalItems / pageSize);
+
+            res.json({
+                showAdvert,
+                totalPages
+            })
+        }
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: 'Failed show advert' })
     }
 }
 
+// Detail Advert
+const getDetailAdvert = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const detailAdvert = await prisma.advert.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                province: true,
+            },
+        });
+
+        // Check data detail advert
+        if (!detailAdvert) {
+            return res.status(404).json({ error: 'Advert not found!' });
+        }
+
+        res.json({ detailAdvert });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     createAdvert,
-    getAdvert
+    getAdvert,
+    getDetailAdvert,
 }
