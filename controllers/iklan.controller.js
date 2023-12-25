@@ -69,6 +69,9 @@ const getDetailAdvert = async (req, res) => {
             where: {
                 id,
             },
+            include: {
+                province: true,
+            },
         });
 
         // Check data detail advert
@@ -77,7 +80,6 @@ const getDetailAdvert = async (req, res) => {
         }
 
         res.json({ detailAdvert });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Internal server error' });
