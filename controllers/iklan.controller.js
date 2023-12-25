@@ -71,6 +71,8 @@ const getDetailAdvert = async (req, res) => {
             },
             include: {
                 province: true,
+                user: true,
+                category: true
             },
         });
 

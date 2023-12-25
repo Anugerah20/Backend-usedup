@@ -5,7 +5,7 @@ const { createAdvert, getAdvert, getDetailAdvert } = require('../controllers/ikl
 
 
 // Route Advert
-router.post('/advert', authenticateToken, createAdvert);
+router.post('/', authenticateToken, createAdvert);
 
 // show all product pagination
 router.get('/getAdvert', getAdvert);
