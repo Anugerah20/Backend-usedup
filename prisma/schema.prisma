@@ -16,6 +16,7 @@ model User {
   email                String   @unique
   fullname             String?
   password             String
+  no_telp              String?
   token_reset_password String?
   advert               Advert[]
 }
