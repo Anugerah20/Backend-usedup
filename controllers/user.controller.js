@@ -75,23 +75,23 @@ const loginUsers = async (req, res) => {
         });
 
         if (!checkUser) {
-            return res.status(400).json({ error: 'Wrong email or password' })
+            return res.status(400).json({ error: 'Wrong email address' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, checkUser.password)
+        const passwordMatch = await bcrypt.compare(password, checkUser.password);
 
         if (passwordMatch) {
             // Token JWT Login
             const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
 
-            res.json({ message: 'Login Successful', checkUser, token })
+            res.json({ message: 'Login Successful', checkUser, token });
         } else {
-            return res.status(401).json({ error: 'Wrong email or password' })
+            return res.status(401).json({ error: 'Wrong password' });
         }
 
     } catch (error) {
         console.log(error);
-        res.status(400).json({ error: 'Login Failed' })
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 // Send Email Forgot Password
@@ -229,18 +229,17 @@ const showDataUser = async (req, res) => {
             id,
         },
     });
-    
     if (newUser) {
         res.json({
-          id: newUser.id,
-          email: newUser.email,
-          fullname: newUser.fullname,
+            id: newUser.id,
+            email: newUser.email,
+            fullname: newUser.fullname,
         });
-      } else {
+    } else {
         res.json({
-          error: "User not found",
+            error: "User not found",
         });
-      }
+    }
 }
 
 // jangan lupa export functionnya
