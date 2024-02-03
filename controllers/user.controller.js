@@ -234,6 +234,8 @@ const showDataUser = async (req, res) => {
             id: newUser.id,
             email: newUser.email,
             fullname: newUser.fullname,
+            no_telp: newUser.no_telp,
+            bio: newUser.bio,
         });
     } else {
         res.json({
@@ -241,6 +243,32 @@ const showDataUser = async (req, res) => {
         });
     }
 }
+
+const editProfile = async (req, res) => {
+    const { id } = req.params;
+    const { fullname, no_telp, bio } = req.body;
+
+    try {
+        const updateUser = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                fullname,
+                no_telp,
+                bio,
+            },
+        });
+
+        res.status(200).json({
+            message: "berhasil edit dan update profile",
+            updateUser
+        });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 // jangan lupa export functionnya
 module.exports = {
@@ -250,5 +278,6 @@ module.exports = {
     forgotPassword,
     checkToken,
     updatePassword,
-    showDataUser
+    showDataUser,
+    editProfile
 }
