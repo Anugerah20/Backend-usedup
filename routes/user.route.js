@@ -5,7 +5,7 @@ const authenticateToken = require('../middleware/protect.route.middleware.js')
 // tes
 
 // ini import function dari controller
-const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser } = require('../controllers/user.controller.js')
+const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser, editProfile } = require('../controllers/user.controller.js')
 
 // Route Register
 router.post('/register', registerUser);
@@ -24,5 +24,7 @@ router.post('/update-password', authenticateToken,updatePassword);
 
 // Route Get User
 router.get("/:id", authenticateToken,showDataUser);
+
+router.put("/edit-profile/:id", authenticateToken,editProfile);
 
 module.exports = router;
