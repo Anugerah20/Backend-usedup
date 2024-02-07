@@ -70,6 +70,7 @@ const getDetailAdvert = async (req, res) => {
                 id,
             },
             include: {
+                user: true,
                 province: true,
             },
         });
