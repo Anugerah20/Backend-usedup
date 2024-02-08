@@ -52,7 +52,7 @@ const registerUser = async (req, res) => {
         })
 
         // Token JWT Register
-        const token = jwt.sign({ userId: newUser.id }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: newUser.id }, secretKey, { expiresIn: '1d' });
         res.json({ message: 'Registration Successful', user: newUser, token })
 
     } catch (error) {
@@ -82,7 +82,7 @@ const loginUsers = async (req, res) => {
 
         if (passwordMatch) {
             // Token JWT Login
-            const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1d' });
 
             res.json({ message: 'Login Successful', checkUser, token });
         } else {
