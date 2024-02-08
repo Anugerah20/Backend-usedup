@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 // Advert Produk
 const createAdvert = async (req, res) => {
-    let { title, description, price, image, categoryId } = req.body
+    let { title, description, price, image, categoryId, provinceId, userId } = req.body
     price = parseInt(price)
 
     try {
@@ -14,8 +14,9 @@ const createAdvert = async (req, res) => {
                 description,
                 price,
                 image,
-                categoryId
-
+                categoryId,
+                provinceId,
+                userId
             },
         })
         res.status(201).json({ advert, message: 'Succesful create advert' })
@@ -71,6 +72,8 @@ const getDetailAdvert = async (req, res) => {
             },
             include: {
                 province: true,
+                user: true,
+                category: true,
             },
         });
 
