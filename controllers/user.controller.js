@@ -26,10 +26,6 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ error: 'All must be filled' })
     }
 
-    // if(password !== confirmPassword) {
-    //     return res.status(400).json({ error: 'Password not matched'})
-    // }
-
     try {
         const duplicateUser = await prisma.user.findUnique({
             where: { email },
@@ -237,7 +233,8 @@ const showDataUser = async (req, res) => {
         }
     });
     if (newUser) {
-        res.json({
+        res.status(200).json({
+            message: "Show Data User Success",
             id: newUser.id,
             email: newUser.email,
             fullname: newUser.fullname,
@@ -246,7 +243,7 @@ const showDataUser = async (req, res) => {
             advert: newUser.advert
         });
     } else {
-        res.json({
+        res.status(400).json({
             error: "User not found",
         });
     }
