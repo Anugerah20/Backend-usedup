@@ -35,7 +35,21 @@ const createCategory = async (req, res) => {
     }
 }
 
+const getAllProvinces = async (req, res) => {
+    try {
+        const province = await prisma.province.findMany()
+
+        res.status(200).json({
+            status: 'success',
+            data: province,
+        })
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     getAllCategory,
-    createCategory
+    createCategory,
+    getAllProvinces
 }

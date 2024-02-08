@@ -228,6 +228,13 @@ const showDataUser = async (req, res) => {
         where: {
             id,
         },
+        include: {
+            advert: {
+                include: {
+                    province: true
+                }
+            }
+        }
     });
     if (newUser) {
         res.json({
@@ -236,6 +243,7 @@ const showDataUser = async (req, res) => {
             fullname: newUser.fullname,
             no_telp: newUser.no_telp,
             bio: newUser.bio,
+            advert: newUser.advert
         });
     } else {
         res.json({
