@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 // Advert Produk
 const createAdvert = async (req, res) => {
-    let { title, description, price, image, categoryId } = req.body
+    let { title, description, price, image, categoryId, provinceId, userId } = req.body
     price = parseInt(price)
 
     try {
@@ -14,8 +14,9 @@ const createAdvert = async (req, res) => {
                 description,
                 price,
                 image,
-                categoryId
-
+                categoryId,
+                provinceId,
+                userId
             },
         })
         res.status(201).json({ advert, message: 'Succesful create advert' })
@@ -72,6 +73,8 @@ const getDetailAdvert = async (req, res) => {
             include: {
                 user: true,
                 province: true,
+                user: true,
+                category: true,
             },
         });
 
@@ -87,8 +90,87 @@ const getDetailAdvert = async (req, res) => {
     }
 }
 
+// Get Like Advert
+const getLikeAdvert = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id,
+            },
+
+            include: {
+                likedAdverts: {
+                    include: {
+                        advert: {
+                            include: {
+                                province: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({
+            user,
+            message: 'Like advert success'
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Failed like advert' });
+    }
+}
+
+// Create Like Advert
+const createLikeAdvert = async (req, res) => {
+    const { userId, advertId } = req.body;
+
+    try {
+        const response = await prisma.like.create({
+            data: {
+                userId,
+                advertId
+            }
+        });
+
+        res.status(200).json({
+            response,
+            message: 'Create like success'
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Failed create like advert' });
+    }
+}
+
+// Delete Like Advert
+const deleteLikeAdvert = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const response = await prisma.like.delete({
+            where: {
+                id,
+            }
+        });
+
+        res.status(200).json({
+            response,
+            message: 'Delete like advert success'
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Failed delete like advert' });
+    }
+}
+
 module.exports = {
     createAdvert,
     getAdvert,
     getDetailAdvert,
+    getLikeAdvert,
+    createLikeAdvert,
+    deleteLikeAdvert
 }

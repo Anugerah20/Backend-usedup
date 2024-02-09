@@ -26,10 +26,6 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ error: 'All must be filled' })
     }
 
-    // if(password !== confirmPassword) {
-    //     return res.status(400).json({ error: 'Password not matched'})
-    // }
-
     try {
         const duplicateUser = await prisma.user.findUnique({
             where: { email },
@@ -52,7 +48,7 @@ const registerUser = async (req, res) => {
         })
 
         // Token JWT Register
-        const token = jwt.sign({ userId: newUser.id }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: newUser.id }, secretKey, { expiresIn: '1d' });
         res.json({ message: 'Registration Successful', user: newUser, token })
 
     } catch (error) {
@@ -82,7 +78,7 @@ const loginUsers = async (req, res) => {
 
         if (passwordMatch) {
             // Token JWT Login
-            const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1d' });
 
             res.json({ message: 'Login Successful', checkUser, token });
         } else {
@@ -228,17 +224,26 @@ const showDataUser = async (req, res) => {
         where: {
             id,
         },
+        include: {
+            advert: {
+                include: {
+                    province: true
+                }
+            }
+        }
     });
     if (newUser) {
-        res.json({
+        res.status(200).json({
+            message: "Show Data User Success",
             id: newUser.id,
             email: newUser.email,
             fullname: newUser.fullname,
             no_telp: newUser.no_telp,
             bio: newUser.bio,
+            advert: newUser.advert
         });
     } else {
-        res.json({
+        res.status(400).json({
             error: "User not found",
         });
     }
