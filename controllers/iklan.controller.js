@@ -37,12 +37,18 @@ const getAdvert = async (req, res) => {
                 where: {
                     id: parseInt(id),
                 },
+                include: {
+                    likes: true,
+                }
             });
 
         } else {
             const showAdvert = await prisma.advert.findMany({
                 skip: (page - 1) * pageSize,
                 take: parseInt(pageSize),
+                include: {
+                    likes: true,
+                }
             })
 
             // Count total items in the database
@@ -75,6 +81,7 @@ const getDetailAdvert = async (req, res) => {
                 province: true,
                 user: true,
                 category: true,
+                likes: true
             },
         });
 
@@ -147,7 +154,7 @@ const createLikeAdvert = async (req, res) => {
 
 // Delete Like Advert
 const deleteLikeAdvert = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params
 
     try {
         const response = await prisma.like.delete({
