@@ -6,18 +6,23 @@ const main = async () => {
           data: [
                {
                     "name": 'Mobil Bekas',
+                    "slug": "mobil-bekas"
                },
                {
                     "name": 'Motor Bekas',
+                    "slug": "motor-bekas"
                },
                {
                     "name": 'Property',
+                    "slug": "property"
                },
                {
                     "name": 'Elektronik dan Gadget',
+                    "slug": "elektronik-dan-gadget"
                },
                {
                     "name": 'Hobi dan Olahraga',
+                    "slug": "hobi-dan-olahraga"
                }
           ]
      })

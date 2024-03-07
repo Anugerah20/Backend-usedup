@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const { default: slugify } = require('slugify');
 
 const prisma = new PrismaClient()
 
@@ -6,7 +7,9 @@ const prisma = new PrismaClient()
 const getAllCategory = async (req, res) => {
 
     try {
-        const response = await prisma.category.findMany({});
+        const response = await prisma.category.findMany({
+            take: 6
+        });
 
         res.json({
             message: 'Get All Category',
@@ -22,10 +25,16 @@ const getAllCategory = async (req, res) => {
 const createCategory = async (req, res) => {
     const { name } = req.body;
 
+    const slugged = slugify(name, {
+        lower: true,
+        strict: true
+    })
+
     try {
         const category = await prisma.category.create({
             data: {
                 name,
+                slug: slugged
             }
         })
         res.status(200).json({ category, message: 'Succesful create category' })
