@@ -28,39 +28,45 @@ const createAdvert = async (req, res) => {
 
 // Show Advert
 const getAdvert = async (req, res) => {
-    const { page, pageSize, id } = req.query;
+    const { search, page, pageSize, id } = req.query;
+
+    let adverts
 
     try {
-        if (id) {
+        if (search) {
             // Retrieve a specific advert by ID
-            showAdvert = await prisma.advert.findUnique({
+            adverts = await prisma.advert.findMany({
                 where: {
-                    id: parseInt(id),
+                    title:{
+                        contains: search
+                    },
                 },
                 include: {
                     likes: true,
-                }
+                },
+                skip: (page - 1) * pageSize,
+                take: parseInt(pageSize)
             });
 
         } else {
-            const showAdvert = await prisma.advert.findMany({
+            adverts = await prisma.advert.findMany({
                 skip: (page - 1) * pageSize,
                 take: parseInt(pageSize),
                 include: {
                     likes: true,
                 }
             })
-
-            // Count total items in the database
-            const totalItems = await prisma.advert.count();
-
-            const totalPages = Math.ceil(totalItems / pageSize);
-
-            res.json({
-                showAdvert,
-                totalPages
-            })
         }
+        
+        // Count total items in the database
+        const totalItems = await prisma.advert.count();
+
+        const totalPages = Math.ceil(totalItems / pageSize);
+
+        res.json({
+            adverts,
+            totalPages
+        })
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: 'Failed show advert' })
