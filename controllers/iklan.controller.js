@@ -37,7 +37,7 @@ const getAdvert = async (req, res) => {
             // Retrieve a specific advert by ID
             adverts = await prisma.advert.findMany({
                 where: {
-                    title:{
+                    title: {
                         contains: search
                     },
                 },
@@ -57,7 +57,7 @@ const getAdvert = async (req, res) => {
                 }
             })
         }
-        
+
         // Count total items in the database
         const totalItems = await prisma.advert.count();
 
@@ -179,11 +179,33 @@ const deleteLikeAdvert = async (req, res) => {
     }
 }
 
+// Delete Advert By ID
+const deleteAdvert = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const response = await prisma.advert.delete({
+            where: {
+                id,
+            }
+        });
+
+        res.status(200).json({
+            response,
+            message: 'Delete advert success'
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Failed delete advert' });
+    }
+}
+
 module.exports = {
     createAdvert,
     getAdvert,
     getDetailAdvert,
     getLikeAdvert,
     createLikeAdvert,
-    deleteLikeAdvert
+    deleteLikeAdvert,
+    deleteAdvert
 }
