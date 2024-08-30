@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const bigIntReplacer = require('../utils/bigIntSerialization');
 
 const prisma = new PrismaClient()
 
@@ -64,7 +65,7 @@ const getAdvert = async (req, res) => {
         const totalPages = Math.ceil(totalItems / pageSize);
 
         res.json({
-            adverts,
+            adverts: JSON.parse(JSON.stringify(adverts, bigIntReplacer)),
             totalPages
         })
     } catch (error) {
@@ -96,7 +97,9 @@ const getDetailAdvert = async (req, res) => {
             return res.status(404).json({ error: 'Advert not found!' });
         }
 
-        res.json({ detailAdvert });
+        res.json({ 
+            detailAdvert: JSON.parse(JSON.stringify(detailAdvert, bigIntReplacer)), 
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Internal server error' });
@@ -196,7 +199,11 @@ const deleteAdvert = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).json({ error: 'Failed delete advert' });
+        res.status(400).json({ 
+            error: 'Failed delete advert',
+            message: error 
+        
+        });
     }
 }
 
