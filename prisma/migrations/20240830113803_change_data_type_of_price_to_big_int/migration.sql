@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Advert" ALTER COLUMN "price" SET DATA TYPE BIGINT;

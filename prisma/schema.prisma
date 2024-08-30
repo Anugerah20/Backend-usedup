@@ -28,7 +28,7 @@ model Advert {
   id          String    @id @default(uuid())
   title       String
   description String
-  price       Int
+  price       BigInt
   image       Json
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
