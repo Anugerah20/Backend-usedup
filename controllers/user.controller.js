@@ -3,7 +3,8 @@ const { default: axios } = require('axios');
 
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const bigIntReplacer = require('../utils/bigIntSerialization');
 
 // JWT env
 const secretKey = process.env.JWT_SECRET;
@@ -240,7 +241,7 @@ const showDataUser = async (req, res) => {
             fullname: newUser.fullname,
             no_telp: newUser.no_telp,
             bio: newUser.bio,
-            advert: newUser.advert
+            advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
         res.status(400).json({
