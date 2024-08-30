@@ -20,7 +20,10 @@ const createAdvert = async (req, res) => {
                 userId
             },
         })
-        res.status(201).json({ advert, message: 'Succesful create advert' })
+        res.status(201).json({ 
+            advert: JSON.parse(JSON.stringify(advert, bigIntReplacer)),
+            message: 'Create advert success' 
+        })
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: 'Failed create advert' })
@@ -194,12 +197,14 @@ const deleteAdvert = async (req, res) => {
         });
 
         res.status(200).json({
-            response,
+            response: JSON.parse(JSON.stringify(response, bigIntReplacer)),
+            status: 'success',
             message: 'Delete advert success'
         });
 
     } catch (error) {
         res.status(400).json({ 
+            status: 'failed',
             error: 'Failed delete advert',
             message: error 
         
