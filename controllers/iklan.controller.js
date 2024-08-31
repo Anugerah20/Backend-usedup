@@ -212,6 +212,41 @@ const deleteAdvert = async (req, res) => {
     }
 }
 
+const getAdvertByCategory = async (req, res) => {
+    const { categoryId } = req.query;
+
+    let adverts
+
+    console.log(categoryId)
+
+    try {
+        adverts = await prisma.category.findUnique({
+            where: {
+                id: categoryId
+            },
+            include: {
+                adverts: {
+                    include: {
+                        likes: true,
+                        user: true,
+                        province: true,
+                        category: true
+                    }
+                }                
+            }
+        });
+
+        res.json({
+            status: 'success',
+            message: 'Get advert by category success',
+            data: JSON.parse(JSON.stringify(adverts, bigIntReplacer)),
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ error: 'Failed show advert' })
+    }
+}
+
 module.exports = {
     createAdvert,
     getAdvert,
@@ -219,5 +254,6 @@ module.exports = {
     getLikeAdvert,
     createLikeAdvert,
     deleteLikeAdvert,
-    deleteAdvert
+    deleteAdvert,
+    getAdvertByCategory
 }
