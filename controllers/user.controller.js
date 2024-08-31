@@ -241,6 +241,7 @@ const showDataUser = async (req, res) => {
             fullname: newUser.fullname,
             no_telp: newUser.no_telp,
             bio: newUser.bio,
+            isVerified: newUser.isVerified,
             advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
@@ -276,6 +277,82 @@ const editProfile = async (req, res) => {
     }
 };
 
+const verifAccount = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const account = await prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (!account) {
+            return res.status(404).json({
+                message: 'id user tidak ditemukan'
+            })
+        }
+
+        const token = jwt.sign({ userId: account.id }, secretKey, { expiresIn: '1d' });
+
+        const updateUser = await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                token_verif: token
+            }
+        })
+
+        const response = await sendEmailForgotPassword(account.fullname, `http://127.0.0.1:5173/verifikasi/${token}`, '2011501042@student.budiluhur.ac.id')
+
+        if (response) {
+            return res.status(200).json({
+                updateUser, response, message: 'input verif token berhasil dan email berhasil dikirim'
+            })
+        } else {
+            return res.status(400).json({
+                message: 'email gagal dikirim'
+            })
+        }
+
+    } catch (error) {
+        console.error('error updating user verif token', error);
+        res.status(500).json({
+            error: 'internal server error'
+        })
+    }
+}
+
+const confirmVerifAccout = async (req, res) => {
+    const { token } = req.params
+
+    try {
+
+        const decodeToken = jwt.verify(token, secretKey)
+
+        const updateVerified = await prisma.user.update({
+            where: {
+                id: decodeToken.userId
+            },
+            data: {
+                isVerified: true,
+                token_verif: null
+            }
+        })
+
+        return res.status(200).json({
+            status: "success",
+            message: "Verifikasi Berhasil!"
+        })
+    } catch (error) {
+        return res.json({
+            status: "verifikasi gagal"
+        })
+    }
+
+}
+
 // jangan lupa export functionnya
 module.exports = {
     contohResponse,
@@ -285,5 +362,7 @@ module.exports = {
     checkToken,
     updatePassword,
     showDataUser,
-    editProfile
+    editProfile,
+    verifAccount,
+    confirmVerifAccout
 }
