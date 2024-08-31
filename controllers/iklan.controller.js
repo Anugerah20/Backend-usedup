@@ -20,9 +20,9 @@ const createAdvert = async (req, res) => {
                 userId
             },
         })
-        res.status(201).json({ 
+        res.status(201).json({
             advert: JSON.parse(JSON.stringify(advert, bigIntReplacer)),
-            message: 'Create advert success' 
+            message: 'Create advert success'
         })
     } catch (error) {
         console.log(error)
@@ -42,7 +42,8 @@ const getAdvert = async (req, res) => {
             adverts = await prisma.advert.findMany({
                 where: {
                     title: {
-                        contains: search
+                        contains: search,
+                        mode: 'insensitive',
                     },
                 },
                 include: {
@@ -100,8 +101,8 @@ const getDetailAdvert = async (req, res) => {
             return res.status(404).json({ error: 'Advert not found!' });
         }
 
-        res.json({ 
-            detailAdvert: JSON.parse(JSON.stringify(detailAdvert, bigIntReplacer)), 
+        res.json({
+            detailAdvert: JSON.parse(JSON.stringify(detailAdvert, bigIntReplacer)),
         });
     } catch (error) {
         console.log(error);
@@ -203,11 +204,11 @@ const deleteAdvert = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).json({ 
+        res.status(400).json({
             status: 'failed',
             error: 'Failed delete advert',
-            message: error 
-        
+            message: error
+
         });
     }
 }
@@ -232,7 +233,7 @@ const getAdvertByCategory = async (req, res) => {
                         province: true,
                         category: true
                     }
-                }                
+                }
             }
         });
 
