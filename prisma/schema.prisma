@@ -22,6 +22,7 @@ model User {
   token_reset_password String?
   advert               Advert[]
   likedAdverts         Like[]
+  isVerified           Boolean  @default(false)
 }
 
 model Advert {
