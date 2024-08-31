@@ -20,6 +20,7 @@ model User {
   bio                  String?
   no_telp              String?
   token_reset_password String?
+  token_verif          String?
   advert               Advert[]
   likedAdverts         Like[]
   isVerified           Boolean  @default(false)
