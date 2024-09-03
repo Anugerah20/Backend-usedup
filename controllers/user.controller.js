@@ -6,10 +6,117 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const bigIntReplacer = require('../utils/bigIntSerialization');
 
+// Google API
+const { google } = require('googleapis');
+const dotenv = require('dotenv');
+// const oauth2 = require('gooogleapis/build/src/apis/oauth2');
+dotenv.config();
+
+// OAuth2Client Google
+const OAuth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'http://localhost:3000/api/user/auth/google/callback'
+)
+
+// Scopes used by the google api
+const scopes = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile'
+]
+
+// Google Auth
+// Generate the url that will be used for the consent dialog
+const authLoginGoogle = async (req, res) => {
+    const authorizationUrl = OAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: scopes,
+        include_granted_scopes: true
+    });
+
+    res.redirect(authorizationUrl);
+    // res.json({ url: authorizationUrl });
+}
+
+// Google Auth Callback
+const authLoginGoogleCallback = async (req, res) => {
+    const { code } = req.query;
+
+    try {
+        const { tokens } = await OAuth2Client.getToken(code);
+        // console.log('Google Tokens:', tokens);
+        OAuth2Client.setCredentials(tokens);
+
+        const oauth2 = google.oauth2({
+            auth: OAuth2Client,
+            version: 'v2'
+        });
+
+        const { data } = await oauth2.userinfo.get();
+        // console.log('User Info:', data); // Debug log
+
+        // Check data user
+        if (!data.email || !data.name) {
+            return res.status(400).json({
+                data: data,
+                message: 'Data not found!'
+            });
+        }
+
+        let user = await prisma.user.findUnique({
+            where: {
+                email: data.email
+            }
+        });
+
+        // Check login not use google
+        if (user && !user.isGmailGoogle) {
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+
+        // Check new user
+        if (!user) {
+            user = await prisma.user.create({
+                data: {
+                    fullname: data.name,
+                    email: data.email,
+                    isGmailGoogle: true
+                }
+            });
+        }
+
+        const payload = {
+            id: user?.id,
+            fullname: user?.fullname,
+            email: user?.email
+        }
+
+        // jwt token
+        const jwtToken = jwt.sign(payload, secretKey, { expiresIn: '1d' });
+
+        // Testing response
+        return res.status(201).json({
+            data: {
+                id: user.id,
+                fullname: user.fullname,
+                email: user.email
+            },
+            token: jwtToken,
+            loginMethod: 'google'
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            message: 'Error login google'
+        });
+    }
+}
+
 // JWT env
 const secretKey = process.env.JWT_SECRET;
 
-// contoh response 
+// contoh response
 const contohResponse = (req, res) => {
 
     // logic disini
@@ -73,6 +180,11 @@ const loginUsers = async (req, res) => {
 
         if (!checkUser) {
             return res.status(400).json({ error: 'Wrong email address' });
+        }
+
+        // Check if the user registered with google
+        if (checkUser.isGmailGoogle) {
+            return res.status(400).json({ message: 'Silakan gunakan login Google untuk akun ini' })
         }
 
         const passwordMatch = await bcrypt.compare(password, checkUser.password);
@@ -364,5 +476,7 @@ module.exports = {
     showDataUser,
     editProfile,
     verifAccount,
-    confirmVerifAccout
+    confirmVerifAccout,
+    authLoginGoogle,
+    authLoginGoogleCallback
 }
