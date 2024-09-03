@@ -24,6 +24,7 @@ model User {
   advert               Advert[]
   likedAdverts         Like[]
   isVerified           Boolean  @default(false)
+  isGmailGoogle        Boolean  @default(false)
 }
 
 model Advert {
