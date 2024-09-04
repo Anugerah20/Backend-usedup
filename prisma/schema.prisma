@@ -16,7 +16,7 @@ model User {
   email                String   @unique
   foto                 String?
   fullname             String?
-  password             String
+  password             String?
   bio                  String?
   no_telp              String?
   token_reset_password String?

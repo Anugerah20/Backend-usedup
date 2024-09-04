@@ -5,7 +5,7 @@ const authenticateToken = require('../middleware/protect.route.middleware.js')
 // tes
 
 // ini import function dari controller
-const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser, editProfile, verifAccount, confirmVerifAccout, authLoginGoogle, authLoginGoogleCallback } = require('../controllers/user.controller.js')
+const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser, editProfile, verifAccount, confirmVerifAccout, userGoogle, getUserGoogle, updateUserGoogle } = require('../controllers/user.controller.js')
 
 // Route Register
 router.post('/register', registerUser);
@@ -13,9 +13,14 @@ router.post('/register', registerUser);
 // Route login
 router.post('/login', loginUsers);
 
-// Route start login google
-router.get('/auth/google', authLoginGoogle);
-router.get('/auth/google/callback', authLoginGoogleCallback);
+// Route login with google
+router.post('/login-google', userGoogle);
+
+// Route get user google
+router.get('/user-google/:id', getUserGoogle);
+
+// Route update user google
+router.put('/update-user-google/:id', updateUserGoogle);
 
 // Route forgot password
 router.post('/forgot-password', authenticateToken, forgotPassword);

@@ -6,109 +6,118 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const bigIntReplacer = require('../utils/bigIntSerialization');
 
-// Google API
-const { google } = require('googleapis');
-const dotenv = require('dotenv');
-// const oauth2 = require('gooogleapis/build/src/apis/oauth2');
-dotenv.config();
-
-// OAuth2Client Google
-const OAuth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    'http://localhost:3000/api/user/auth/google/callback'
-)
-
-// Scopes used by the google api
-const scopes = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile'
-]
-
-// Google Auth
-// Generate the url that will be used for the consent dialog
-const authLoginGoogle = async (req, res) => {
-    const authorizationUrl = OAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-        include_granted_scopes: true
-    });
-
-    res.redirect(authorizationUrl);
-    // res.json({ url: authorizationUrl });
-}
-
-// Google Auth Callback
-const authLoginGoogleCallback = async (req, res) => {
-    const { code } = req.query;
+// Google login
+const userGoogle = async (req, res) => {
+    const { fullname, email, foto } = req.body;
 
     try {
-        const { tokens } = await OAuth2Client.getToken(code);
-        // console.log('Google Tokens:', tokens);
-        OAuth2Client.setCredentials(tokens);
-
-        const oauth2 = google.oauth2({
-            auth: OAuth2Client,
-            version: 'v2'
-        });
-
-        const { data } = await oauth2.userinfo.get();
-        // console.log('User Info:', data); // Debug log
-
-        // Check data user
-        if (!data.email || !data.name) {
-            return res.status(400).json({
-                data: data,
-                message: 'Data not found!'
-            });
-        }
-
-        let user = await prisma.user.findUnique({
+        // Check if user already exists
+        const user = await prisma.user.findUnique({
             where: {
-                email: data.email
+                email,
             }
         });
 
-        // Check login not use google
-        if (user && !user.isGmailGoogle) {
-            return res.status(400).json({ message: 'Email already registered' });
-        }
-
-        // Check new user
-        if (!user) {
-            user = await prisma.user.create({
+        if (user) {
+            // User exists, update their details
+            const responseUpdate = await prisma.user.update({
+                where: {
+                    email
+                },
                 data: {
-                    fullname: data.name,
-                    email: data.email,
+                    fullname,
+                    foto
+                }
+            });
+
+            // Generate JWT token
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+            return res.status(201).json({
+                status: 'Success login with Google',
+                data: responseUpdate,
+                token
+            });
+
+        } else {
+            // User doesn't exist, create a new user
+            const createUserGoogle = await prisma.user.create({
+                data: {
+                    fullname,
+                    email,
+                    password: null,
+                    foto,
                     isGmailGoogle: true
                 }
             });
+
+            // Generate JWT token for the new user
+            const token = jwt.sign({ userId: createUserGoogle.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+            return res.status(210).json({
+                data: createUserGoogle,
+                token
+            });
         }
+    } catch (error) {
+        console.error('Error google login:', error);
+        return res.status(400).json({
+            message: 'Error during Google login',
+            error
+        });
+    }
+};
 
-        const payload = {
-            id: user?.id,
-            fullname: user?.fullname,
-            email: user?.email
-        }
+// Get user login with google
+const getUserGoogle = async (req, res) => {
+    const { id } = req.params;
 
-        // jwt token
-        const jwtToken = jwt.sign(payload, secretKey, { expiresIn: '1d' });
+    try {
+        const response = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
 
-        // Testing response
-        return res.status(201).json({
-            data: {
-                id: user.id,
-                fullname: user.fullname,
-                email: user.email
-            },
-            token: jwtToken,
-            loginMethod: 'google'
-        })
+        res.status(201).json({
+            status: 'Success get user google',
+            response
+        });
 
     } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            message: 'Error login google'
+        res.status(400).json({
+            message: 'Error get user google',
+            error
+        });
+    }
+}
+
+// Update user login with google
+const updateUserGoogle = async (req, res) => {
+    const { id } = req.params;
+    const { fullname, no_telp, bio } = req.body;
+
+    try {
+        const response = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                fullname,
+                no_telp,
+                bio
+            }
+        });
+
+        res.status(201).json({
+            status: 'Success update user google',
+            response
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            message: 'Error update user google',
+            error
         });
     }
 }
@@ -477,6 +486,7 @@ module.exports = {
     editProfile,
     verifAccount,
     confirmVerifAccout,
-    authLoginGoogle,
-    authLoginGoogleCallback
+    userGoogle,
+    getUserGoogle,
+    updateUserGoogle
 }
