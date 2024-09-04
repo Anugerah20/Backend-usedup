@@ -10,62 +10,62 @@ const bigIntReplacer = require('../utils/bigIntSerialization');
 const userGoogle = async (req, res) => {
     const { fullname, email, foto } = req.body;
 
-    // try {
-    // Check if user already exists
-    const user = await prisma.user.findUnique({
-        where: {
-            email,
-        }
-    });
-
-    if (user) {
-        // User exists, update their details
-        const responseUpdate = await prisma.user.update({
+    try {
+        // Check if user already exists
+        const user = await prisma.user.findUnique({
             where: {
-                email
-            },
-            data: {
-                fullname,
-                foto
-            }
-        });
-
-        // Generate JWT token
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-        return res.status(201).json({
-            status: 'Success login with Google',
-            data: responseUpdate,
-            token
-        });
-
-    } else {
-        // User doesn't exist, create a new user
-        const createUserGoogle = await prisma.user.create({
-            data: {
-                fullname,
                 email,
-                password: null,
-                foto,
-                isGmailGoogle: true
             }
         });
 
-        // Generate JWT token for the new user
-        const token = jwt.sign({ userId: createUserGoogle.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        if (user) {
+            // User exists, update their details
+            const responseUpdate = await prisma.user.update({
+                where: {
+                    email
+                },
+                data: {
+                    fullname,
+                    foto
+                }
+            });
 
-        return res.status(210).json({
-            data: createUserGoogle,
-            token
+            // Generate JWT token
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+            return res.status(201).json({
+                status: 'Success login with Google',
+                data: responseUpdate,
+                token
+            });
+
+        } else {
+            // User doesn't exist, create a new user
+            const createUserGoogle = await prisma.user.create({
+                data: {
+                    fullname,
+                    email,
+                    password: null,
+                    foto,
+                    isGmailGoogle: true
+                }
+            });
+
+            // Generate JWT token for the new user
+            const token = jwt.sign({ userId: createUserGoogle.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+            return res.status(210).json({
+                data: createUserGoogle,
+                token
+            });
+        }
+    } catch (error) {
+        console.error('Error google login:', error);
+        return res.status(400).json({
+            message: 'Error during Google login',
+            error
         });
     }
-    // } catch (error) {
-    // console.error('Error google login:', error);
-    return res.status(400).json({
-        message: 'Error during Google login',
-        error
-    });
-    // }
 };
 
 // Get user login with google
