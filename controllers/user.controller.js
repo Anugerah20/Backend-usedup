@@ -468,7 +468,7 @@ const confirmVerifAccout = async (req, res) => {
         })
     } catch (error) {
         return res.json({
-            status: "verifikasi gagal"
+            message: "verifikasi gagal"
         })
     }
 
