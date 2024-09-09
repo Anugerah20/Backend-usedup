@@ -215,15 +215,15 @@ const loginUsers = async (req, res) => {
 // Send Email Forgot Password
 const sendEmailForgotPassword = async (nama, token, email) => {
     let data = {
-        service_id: process.env.EMAILJS_SERVICE_ID,
-        template_id: process.env.EMAILJS_TEMPLATE_ID,
-        user_id: process.env.EMAILJS_USER_ID,
+        service_id: process.env.EMAILJS_SERVICE_ID_FORGOT,
+        template_id: process.env.EMAILJS_TEMPLATE_ID_FORGOT,
+        user_id: process.env.EMAILJS_USER_ID_FORGOT,
         template_params: {
             'nama': nama,
             'token': token,
             'to_email': email
         },
-        'accessToken': process.env.EMAILJS_ACCESS_TOKEN
+        'accessToken': process.env.EMAILJS_ACCESS_TOKEN_FORGOT
     };
 
     try {
@@ -398,6 +398,29 @@ const editProfile = async (req, res) => {
     }
 };
 
+const sendEmailVerifAccount = async (nama, token, email) => {
+    let data = {
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: process.env.EMAILJS_TEMPLATE_ID,
+        user_id: process.env.EMAILJS_USER_ID,
+        template_params: {
+            'nama': nama,
+            'token': token,
+            'to_email': email
+        },
+        'accessToken': process.env.EMAILJS_ACCESS_TOKEN
+    };
+
+    try {
+        await axios.post('https://api.emailjs.com/api/v1.0/email/send', data)
+
+        return true
+    } catch (error) {
+        console.log(error);
+        return false
+    }
+}
+
 const verifAccount = async (req, res) => {
     const { id } = req.body;
 
@@ -425,7 +448,7 @@ const verifAccount = async (req, res) => {
             }
         })
 
-        const response = await sendEmailForgotPassword(account.fullname, `http://127.0.0.1:5173/verifikasi/${token}`, '2011501042@student.budiluhur.ac.id')
+        const response = await sendEmailVerifAccount(account.fullname, `http://127.0.0.1:5173/verifikasi/${token}`, account.email)
 
         if (response) {
             return res.status(200).json({
