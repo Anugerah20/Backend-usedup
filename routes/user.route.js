@@ -23,13 +23,13 @@ router.get('/user-google/:id', getUserGoogle);
 router.put('/update-user-google/:id', updateUserGoogle);
 
 // Route forgot password
-router.post('/forgot-password', authenticateToken, forgotPassword);
+router.post('/forgot-password', forgotPassword);
 
 // Route check token
-router.post('/check-token', authenticateToken, checkToken);
+router.post('/check-token', checkToken);
 
 // Route updated password
-router.post('/update-password', authenticateToken, updatePassword);
+router.post('/update-password', updatePassword);
 
 // Route Get User
 router.get("/:id", authenticateToken, showDataUser);
