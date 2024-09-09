@@ -247,6 +247,12 @@ const forgotPassword = async (req, res) => {
 
     if (checkUser) {
 
+        if (checkUser.isGmailGoogle === true) {
+            return res.status(500).json({
+                error: 'lu login pake gmail kocak'
+            })
+        }
+
         const resetPasswordToken = jwt.sign({ userId: checkUser.id }, secretKey, { expiresIn: '1h' });
 
         await prisma.user.update({
