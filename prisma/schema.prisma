@@ -33,6 +33,9 @@ model Advert {
   description String
   price       BigInt
   image       Json
+  location    String?
+  latitude    Float?
+  longitude   Float?
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
   user        User?     @relation(fields: [userId], references: [id])
