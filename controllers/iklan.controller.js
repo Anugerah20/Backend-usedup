@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 // Advert Produk
 const createAdvert = async (req, res) => {
-    let { title, description, price, image, location, latitude, longitude, categoryId, provinceId, userId } = req.body
+    let { title, description, price, image, address, latitude, longitude, categoryId, provinceId, userId } = req.body
     price = parseInt(price)
 
     try {
@@ -15,7 +15,7 @@ const createAdvert = async (req, res) => {
                 description,
                 price,
                 image,
-                location,
+                address,
                 latitude,
                 longitude,
                 categoryId,
