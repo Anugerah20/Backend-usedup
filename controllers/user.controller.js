@@ -355,7 +355,8 @@ const showDataUser = async (req, res) => {
         include: {
             advert: {
                 include: {
-                    province: true
+                    province: true,
+                    likes: true
                 }
             }
         }
