@@ -369,6 +369,7 @@ const showDataUser = async (req, res) => {
             no_telp: newUser.no_telp,
             bio: newUser.bio,
             isVerified: newUser.isVerified,
+            foto: newUser.foto,
             advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
