@@ -355,7 +355,8 @@ const showDataUser = async (req, res) => {
         include: {
             advert: {
                 include: {
-                    province: true
+                    province: true,
+                    likes: true
                 }
             }
         }
@@ -370,6 +371,8 @@ const showDataUser = async (req, res) => {
             bio: newUser.bio,
             isVerified: newUser.isVerified,
             foto: newUser.foto,
+            kuota_iklan: newUser.kuota_iklan,
+            kuota_sorot: newUser.kuota_sorot,
             advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
