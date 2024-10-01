@@ -12,8 +12,8 @@ datasource db {
 }
 
 model User {
-  id                   String   @id @default(uuid())
-  email                String   @unique
+  id                   String             @id @default(uuid())
+  email                String             @unique
   foto                 String?
   fullname             String?
   password             String?
@@ -21,10 +21,13 @@ model User {
   no_telp              String?
   token_reset_password String?
   token_verif          String?
+  kuota_iklan          Int                @default(0)
+  kuota_sorot          Int                @default(0)
   advert               Advert[]
   likedAdverts         Like[]
-  isVerified           Boolean  @default(false)
-  isGmailGoogle        Boolean  @default(false)
+  isVerified           Boolean            @default(false)
+  isGmailGoogle        Boolean            @default(false)
+  RiwayatPembelian     RiwayatPembelian[]
 }
 
 model Advert {
@@ -64,4 +67,42 @@ model Province {
   id      String   @id @default(uuid())
   name    String
   adverts Advert[]
+}
+
+model Paket {
+  id               String             @id @default(cuid())
+  name             String
+  description      Json?
+  type             PackageType?
+  price            Int
+  duration         Int?
+  kuota            Int?
+  expired          DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  RiwayatPembelian RiwayatPembelian[]
+}
+
+enum PackageType {
+  IKLAN
+  SOROT
+}
+
+model RiwayatPembelian {
+  id          String   @id @default(cuid())
+  order_id    String
+  payment_url String
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+  paket       Paket?   @relation(fields: [paketId], references: [id])
+  paketId     String?
+  status      Status   @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Status {
+  PENDING
+  SUCCESS
+  FAILED
 }
