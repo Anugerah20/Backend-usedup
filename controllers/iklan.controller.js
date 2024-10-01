@@ -187,7 +187,10 @@ const deleteLikeAdvert = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).json({ error: 'Failed delete like advert' });
+        res.status(400).json({
+            status: 'Failed',
+            message: error
+        });
     }
 }
 
