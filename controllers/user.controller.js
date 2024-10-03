@@ -504,8 +504,35 @@ const confirmVerifAccout = async (req, res) => {
             message: "verifikasi gagal"
         })
     }
-
 }
+
+const getKuota = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const response = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+
+        const data = {
+            kuota_iklan: response.kuota_iklan,
+            kuota_sorot: response.kuota_sorot
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: 'error get kuota',
+            error
+        })
+    }
+}
+
 
 // jangan lupa export functionnya
 module.exports = {
@@ -521,5 +548,6 @@ module.exports = {
     confirmVerifAccout,
     userGoogle,
     getUserGoogle,
-    updateUserGoogle
+    updateUserGoogle,
+    getKuota
 }

@@ -5,7 +5,7 @@ const authenticateToken = require('../middleware/protect.route.middleware.js')
 // tes
 
 // ini import function dari controller
-const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser, editProfile, verifAccount, confirmVerifAccout, userGoogle, getUserGoogle, updateUserGoogle } = require('../controllers/user.controller.js')
+const { registerUser, loginUsers, forgotPassword, checkToken, updatePassword, createAdvert, createCategory, showDataUser, editProfile, verifAccount, confirmVerifAccout, userGoogle, getUserGoogle, updateUserGoogle, getKuota } = require('../controllers/user.controller.js')
 
 // Route Register
 router.post('/register', registerUser);
@@ -39,5 +39,7 @@ router.put("/edit-profile/:id", authenticateToken, editProfile);
 router.post("/verifAccount", authenticateToken, verifAccount);
 
 router.put("/confirmVerifAccount/:token", authenticateToken, confirmVerifAccout)
+
+router.get("/kuota/:id", authenticateToken, getKuota)
 
 module.exports = router;

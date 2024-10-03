@@ -99,7 +99,7 @@ const midtransNotification = async (req, res) => {
 
         const updateStatusTransaksi = await prisma.riwayatPembelian.update({
             where: {
-                id: findTransaksi.id
+                id: findTransaksi?.id
             },
             data: {
                 status: transaction_status === 'settlement' || transaction_status === 'capture' ? 'SUCCESS' : 'FAILED'
