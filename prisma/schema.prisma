@@ -28,6 +28,25 @@ model User {
   isVerified           Boolean            @default(false)
   isGmailGoogle        Boolean            @default(false)
   RiwayatPembelian     RiwayatPembelian[]
+  rooms                Room[]
+  messages             Message[]
+}
+
+model Room {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  users     User[]
+  messages  Message[]
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  senderId  String
+  roomId    String
+  sender    User     @relation(fields: [senderId], references: [id])
+  room      Room     @relation(fields: [roomId], references: [id])
 }
 
 model Advert {
