@@ -51,6 +51,7 @@ const getAdvert = async (req, res) => {
                 },
                 include: {
                     likes: true,
+                    province: true,
                 },
                 skip: (page - 1) * pageSize,
                 take: parseInt(pageSize)
@@ -62,6 +63,7 @@ const getAdvert = async (req, res) => {
                 take: parseInt(pageSize),
                 include: {
                     likes: true,
+                    province: true,
                 }
             })
         }
@@ -185,7 +187,10 @@ const deleteLikeAdvert = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).json({ error: 'Failed delete like advert' });
+        res.status(400).json({
+            status: 'Failed',
+            message: error
+        });
     }
 }
 
