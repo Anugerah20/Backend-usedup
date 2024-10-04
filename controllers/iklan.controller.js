@@ -117,33 +117,33 @@ const getDetailAdvert = async (req, res) => {
 const getLikeAdvert = async (req, res) => {
     const { id } = req.params;
 
-    // try {
-    const user = await prisma.user.findUnique({
-        where: {
-            id,
-        },
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id,
+            },
 
-        include: {
-            likedAdverts: {
-                include: {
-                    advert: {
-                        include: {
-                            province: true,
+            include: {
+                likedAdverts: {
+                    include: {
+                        advert: {
+                            include: {
+                                province: true,
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
-    res.status(200).json({
-        user,
-        message: 'Like advert success'
-    });
+        res.status(200).json({
+            user: JSON.parse(JSON.stringify(user, bigIntReplacer)),
+            message: 'Like advert success'
+        });
 
-    // } catch (error) {
-    //     res.status(400).json({ error: 'Failed like advert' });
-    // }
+    } catch (error) {
+        res.status(400).json({ error: 'Failed like advert' });
+    }
 }
 
 // Create Like Advert
