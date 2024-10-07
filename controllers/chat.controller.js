@@ -69,14 +69,14 @@ const getChat = async (req, res) => {
 }
 
 const sendChatMessage = async (req, res) => {
-    const { messages } = req.body;
+    const { data } = req.body;
 
     try {
         const sendMessage = await prisma.message.create({
             data: {
-                content: messages.content,
-                senderId: messages.userId,
-                roomId: messages.roomId
+                content: data.content,
+                senderId: data.senderId,
+                roomId: data.roomId
             }
         });
 
