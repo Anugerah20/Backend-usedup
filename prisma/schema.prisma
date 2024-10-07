@@ -105,6 +105,7 @@ model Paket {
 enum PackageType {
   IKLAN
   SOROT
+  PREMIUM
 }
 
 model RiwayatPembelian {
