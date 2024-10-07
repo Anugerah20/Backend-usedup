@@ -6,8 +6,16 @@ const getRoomChat = async (req, res) => {
     try {
         const rooms = await prisma.room.findMany({
             include: {
-                users: true
-            }
+                users: {
+                    include: {
+                        messages: {
+                            orderBy: {
+                                createdAt: 'desc'
+                            }
+                        }
+                    }
+                }
+            },
         });
 
         const filteredRooms = rooms.map(room => {
