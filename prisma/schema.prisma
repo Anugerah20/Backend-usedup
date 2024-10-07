@@ -50,21 +50,23 @@ model Message {
 }
 
 model Advert {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  price       BigInt
-  image       Json
-  address     String?
-  latitude    Float?
-  longitude   Float?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  categoryId  String?
-  user        User?     @relation(fields: [userId], references: [id])
-  userId      String?
-  province    Province? @relation(fields: [provinceId], references: [id])
-  provinceId  String?
-  likes       Like[]
+  id              String    @id @default(uuid())
+  title           String
+  description     String
+  price           BigInt
+  image           Json
+  address         String?
+  latitude        Float?
+  isHighlighted   Boolean   @default(false)
+  highlightExpiry DateTime?
+  longitude       Float?
+  category        Category? @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  user            User?     @relation(fields: [userId], references: [id])
+  userId          String?
+  province        Province? @relation(fields: [provinceId], references: [id])
+  provinceId      String?
+  likes           Like[]
 }
 
 model Like {
