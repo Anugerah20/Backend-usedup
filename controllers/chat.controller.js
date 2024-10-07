@@ -33,25 +33,37 @@ const getRoomChat = async (req, res) => {
 }
 
 const getChat = async (req, res) => {
-    const { room } = req.body;
+    const { data } = req.body;
 
     try {
         const roomMessages = await prisma.room.findFirst({
             where: {
-                id: room.id
-            }, include: {
-                messages: true
+                id: data.room.id
+            },
+            include: {
+                messages: {
+                    include: {
+                        sender: true
+                    }
+                },
+                users: {
+                    where: {
+                        id: {
+                            not: data.userid
+                        }
+                    }
+                }
             }
         });
 
         res.status(200).json({
             roomMessages,
-            message: 'success get roomsMessages'
+            message: 'success get users'
         });
     } catch (error) {
         console.log('failed', error);
         res.status(500).json({
-            message: 'failed get messages'
+            message: 'failed get users'
         });
     }
 }
