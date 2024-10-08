@@ -14,6 +14,7 @@ const createRoomChat = async (req, res) => {
             message: 'success create room'
         });
     } catch (error) {
+        console.log('failed create room', error);
         res.status(500).json({ error: 'Failed create room' });
     }
 }
@@ -45,6 +46,7 @@ const getRoomChat = async (req, res) => {
             message: 'success get room'
         });
     } catch (error) {
+        console.log('failed get room', error);
         res.status(500).json({ error: 'Failed get room' });
     }
 }
@@ -78,9 +80,9 @@ const getChat = async (req, res) => {
             message: 'success get users'
         });
     } catch (error) {
-        console.log('failed', error);
+        console.log('failed get messages', error);
         res.status(500).json({
-            message: 'failed get users'
+            error: 'failed get messages'
         });
     }
 }
@@ -104,7 +106,7 @@ const sendChatMessage = async (req, res) => {
     } catch (error) {
         console.error('failed create message', error);
         res.status(500).json({
-            message: 'failed create message'
+            error: 'failed create message'
         })
     }
 
