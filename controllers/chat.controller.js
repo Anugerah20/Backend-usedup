@@ -24,6 +24,13 @@ const getRoomChat = async (req, res) => {
     const { userId } = req.body;
     try {
         const rooms = await prisma.room.findMany({
+            where: {
+                users: {
+                    some: {
+                        id: userId
+                    }
+                }
+            },
             include: {
                 users: {
                     include: {
@@ -35,6 +42,9 @@ const getRoomChat = async (req, res) => {
                     }
                 }
             },
+            orderBy: {
+                createdAt: 'desc'
+            }
         });
 
         const filteredRooms = rooms.map(room => {
@@ -51,6 +61,7 @@ const getRoomChat = async (req, res) => {
         res.status(500).json({ error: 'Failed get room' });
     }
 }
+
 
 const getChat = async (req, res) => {
     const { data } = req.body;
