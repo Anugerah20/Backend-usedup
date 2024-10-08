@@ -47,8 +47,16 @@ const getAdvert = async (req, res) => {
                     title: {
                         contains: search,
                         mode: 'insensitive',
-                    },
+                    }
                 },
+                orderBy: [
+                    {
+                        isHighlighted: 'desc'
+                    },
+                    {
+                        createdAt: 'desc'
+                    }
+                ],
                 include: {
                     likes: true,
                     province: true,
@@ -73,8 +81,10 @@ const getAdvert = async (req, res) => {
 
         const totalPages = Math.ceil(totalItems / pageSize);
 
+        const sortIklan = adverts.sort((a, b) => b.isHighlighted - a.isHighlighted)
+
         res.json({
-            adverts: JSON.parse(JSON.stringify(adverts, bigIntReplacer)),
+            adverts: JSON.parse(JSON.stringify(sortIklan, bigIntReplacer)),
             totalPages
         })
     } catch (error) {
@@ -226,8 +236,6 @@ const getAdvertByCategory = async (req, res) => {
 
     let adverts
 
-    console.log(categoryId)
-
     try {
         adverts = await prisma.category.findUnique({
             where: {
@@ -240,7 +248,15 @@ const getAdvertByCategory = async (req, res) => {
                         user: true,
                         province: true,
                         category: true
-                    }
+                    },
+                    orderBy: [
+                        {
+                            isHighlighted: 'desc'
+                        },
+                        {
+                            createdAt: 'desc'
+                        }
+                    ]
                 }
             }
         });
