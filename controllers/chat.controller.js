@@ -3,14 +3,15 @@ const prisma = new PrismaClient()
 
 const createRoomChat = async (req, res) => {
     const { userId, friendId } = req.body;
+
     try {
         const createRoom = await prisma.room.create({
             data: {
                 users: { connect: [{ id: userId }, { id: friendId }] }
             }
         })
+
         res.status(200).json({
-            createRoom,
             message: 'success create room'
         });
     } catch (error) {
