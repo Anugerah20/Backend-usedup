@@ -23,6 +23,19 @@ const createAdvert = async (req, res) => {
                 userId
             },
         })
+
+        // update kuota_iklan user
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                kuota_iklan: {
+                    decrement: 1
+                }
+            }
+        })
+
         res.status(201).json({
             advert: JSON.parse(JSON.stringify(advert, bigIntReplacer)),
             message: 'Create advert success'
