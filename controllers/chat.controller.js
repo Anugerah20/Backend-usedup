@@ -5,6 +5,33 @@ const createRoomChat = async (req, res) => {
     const { userId, friendId } = req.body;
 
     try {
+        const existingRoom = await prisma.room.findFirst({
+            where: {
+                users: {
+                    some: {
+                        id: {
+                            in: [friendId]
+                        }
+                    }
+                }
+            }
+        })
+
+        if (existingRoom) {
+            const updateRoom = await prisma.room.update({
+                where: {
+                    id: existingRoom.id
+                },
+                data: {
+                    createdAt: new Date()
+                }
+            })
+
+            return res.status(200).json({
+                message: 'success update room'
+            })
+        }
+
         const createRoom = await prisma.room.create({
             data: {
                 users: { connect: [{ id: userId }, { id: friendId }] }
@@ -32,14 +59,12 @@ const getRoomChat = async (req, res) => {
                 }
             },
             include: {
-                users: {
-                    include: {
-                        messages: {
-                            orderBy: {
-                                createdAt: 'desc'
-                            }
-                        }
-                    }
+                users: true,
+                messages: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1
                 }
             },
             orderBy: {
@@ -61,7 +86,6 @@ const getRoomChat = async (req, res) => {
         res.status(500).json({ error: 'Failed get room' });
     }
 }
-
 
 const getChat = async (req, res) => {
     const { data } = req.body;
