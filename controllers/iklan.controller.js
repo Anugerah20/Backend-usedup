@@ -72,7 +72,15 @@ const getAdvert = async (req, res) => {
                 include: {
                     likes: true,
                     province: true,
-                }
+                },
+                orderBy: [
+                    {
+                        isHighlighted: 'desc'
+                    },
+                    {
+                        createdAt: 'desc'
+                    }
+                ],
             })
         }
 
