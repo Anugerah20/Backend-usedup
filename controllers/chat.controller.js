@@ -135,6 +135,15 @@ const sendChatMessage = async (req, res) => {
             }
         });
 
+        const updateCreated = await prisma.room.update({
+            where: {
+                id: data.roomId
+            },
+            data: {
+                createdAt: new Date()
+            }
+        })
+
         res.status(200).json({
             sendMessage,
             message: 'success create message'
