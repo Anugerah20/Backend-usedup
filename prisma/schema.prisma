@@ -21,6 +21,8 @@ model User {
   no_telp              String?
   token_reset_password String?
   token_verif          String?
+  isPremium            Boolean            @default(false)
+  premiumExpiry        DateTime?
   kuota_iklan          Int                @default(0)
   kuota_sorot          Int                @default(0)
   advert               Advert[]
