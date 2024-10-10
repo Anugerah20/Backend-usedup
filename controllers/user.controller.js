@@ -373,6 +373,7 @@ const showDataUser = async (req, res) => {
             foto: newUser.foto,
             kuota_iklan: newUser.kuota_iklan,
             kuota_sorot: newUser.kuota_sorot,
+            isPremium: newUser.isPremium,
             advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
