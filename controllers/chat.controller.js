@@ -111,6 +111,19 @@ const getChat = async (req, res) => {
             }
         });
 
+        await prisma.message.updateMany({
+            where: {
+                roomId: data.room.id,
+                senderId: {
+                    not: data.userid
+                },
+                read: false
+            },
+            data: {
+                read: true
+            }
+        });
+
         res.status(200).json({
             roomMessages,
             message: 'success get users'
@@ -157,4 +170,38 @@ const sendChatMessage = async (req, res) => {
 
 }
 
-module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat }
+const getNotifUnread = async (req, res) => {
+    const { userId } = req.body;
+
+    const rooms = await prisma.room.findMany({
+        where: {
+            users: {
+                some: {
+                    id: userId
+                }
+            }
+        },
+        include: {
+            messages: {
+                where: {
+                    senderId: {
+                        not: userId
+                    },
+                    read: false
+                }
+            }
+        }
+    });
+
+    const unreadCount = rooms.reduce((acc, room) => {
+        return acc + room.messages.length;
+    }, 0);
+
+    res.json({
+        unreadCount
+    });
+};
+
+
+
+module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat, getNotifUnread }
