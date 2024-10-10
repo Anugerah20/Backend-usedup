@@ -92,10 +92,10 @@ const midtransNotification = async (req, res) => {
 
     const getDateForExpire = (day) => {
         let currentDate = new Date();
-        
+
         let highlightExpiry = new Date();
         highlightExpiry.setDate(currentDate.getDate() + day);
-        
+
         let formattedExpiry = highlightExpiry.toISOString()
 
         return formattedExpiry
@@ -157,7 +157,9 @@ const midtransNotification = async (req, res) => {
                         kuota_iklan: getCurrentUserKuota.kuota_iklan + findPaket.kuota,
                     }
                 })
-            } else {
+            }
+
+            if (findPaket.type === "SOROT") {
                 const updatePaket = await prisma.user.update({
                     where: {
                         id: findTransaksi.userId
