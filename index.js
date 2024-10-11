@@ -7,9 +7,17 @@ const paketRoute = require('./routes/paket.route')
 const transaksiRoute = require('./routes/transaksi.route')
 const chatRoute = require('./routes/chat,route')
 const cors = require('cors')
+const { CronJob } = require('cron');
+const { checkPremiumExpired } = require('./controllers/user.controller');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+const job = new CronJob(`*/10 * * * *`, function () {
+    checkPremiumExpired()
+});
+
+job.start();
 
 // ini untuk parse request body
 app.use(express.json());
