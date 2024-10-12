@@ -173,6 +173,12 @@ const sendChatMessage = async (req, res) => {
 const getNotifUnread = async (req, res) => {
     const { userId } = req.body;
 
+    if (!userId) {
+        return res.status(200).json({
+            unreadCount: 0,
+        })
+    }
+
     const rooms = await prisma.room.findMany({
         where: {
             users: {
