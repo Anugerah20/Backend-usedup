@@ -97,9 +97,9 @@ const getChat = async (req, res) => {
             },
             include: {
                 messages: {
-                    include: {
-                        sender: true
-                    }
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
                 },
                 users: {
                     where: {
@@ -108,7 +108,7 @@ const getChat = async (req, res) => {
                         }
                     }
                 }
-            }
+            },
         });
 
         await prisma.message.updateMany({
