@@ -97,9 +97,9 @@ const getChat = async (req, res) => {
             },
             include: {
                 messages: {
-                    include: {
-                        sender: true
-                    }
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
                 },
                 users: {
                     where: {
@@ -108,7 +108,7 @@ const getChat = async (req, res) => {
                         }
                     }
                 }
-            }
+            },
         });
 
         await prisma.message.updateMany({
@@ -208,6 +208,27 @@ const getNotifUnread = async (req, res) => {
     });
 };
 
+const deleteOneMessage = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedMessage = await prisma.message.delete({
+            where: {
+                id
+            }
+        })
+
+        res.status(200).json({
+            message: 'success delete message'
+        })
+    } catch (error) {
+        console.log('failed delete message', error);
+        res.status(500).json({
+            message: 'failed delete message'
+        })
+    }
+}
 
 
-module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat, getNotifUnread }
+
+module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat, getNotifUnread, deleteOneMessage }
