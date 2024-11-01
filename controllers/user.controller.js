@@ -373,6 +373,7 @@ const showDataUser = async (req, res) => {
             foto: newUser.foto,
             kuota_iklan: newUser.kuota_iklan,
             kuota_sorot: newUser.kuota_sorot,
+            isPremium: newUser.isPremium,
             advert: JSON.parse(JSON.stringify(newUser.advert, bigIntReplacer))
         });
     } else {
@@ -533,6 +534,32 @@ const getKuota = async (req, res) => {
     }
 }
 
+const checkPremiumExpired = async () => {
+    console.log('checking premium expired...');
+
+    const users = await prisma.user.findMany({
+        where: {
+            isPremium: true
+        }
+    });
+
+    const total = users.forEach(async user => {
+        if (user.premiumExpiry < new Date()) {
+            await prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    isPremium: false,
+                    premiumExpiry: null
+                }
+            })
+        }
+    });
+
+    console.log('checking premium expired done!');
+}
+
 
 // jangan lupa export functionnya
 module.exports = {
@@ -549,5 +576,6 @@ module.exports = {
     userGoogle,
     getUserGoogle,
     updateUserGoogle,
-    getKuota
+    getKuota,
+    checkPremiumExpired
 }

@@ -21,6 +21,8 @@ model User {
   no_telp              String?
   token_reset_password String?
   token_verif          String?
+  isPremium            Boolean            @default(false)
+  premiumExpiry        DateTime?
   kuota_iklan          Int                @default(0)
   kuota_sorot          Int                @default(0)
   advert               Advert[]
@@ -30,8 +32,8 @@ model User {
   RiwayatPembelian     RiwayatPembelian[]
   rooms                Room[]
   messages             Message[]
-  createdAt            DateTime?           @default(now())
-  updatedAt            DateTime?           @updatedAt
+  createdAt            DateTime?          @default(now())
+  updatedAt            DateTime?          @updatedAt
 }
 
 model Room {
@@ -42,13 +44,14 @@ model Room {
 }
 
 model Message {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   content   String
   createdAt DateTime? @default(now())
   senderId  String
   roomId    String
-  sender    User     @relation(fields: [senderId], references: [id])
-  room      Room     @relation(fields: [roomId], references: [id])
+  sender    User      @relation(fields: [senderId], references: [id])
+  room      Room      @relation(fields: [roomId], references: [id])
+  read      Boolean   @default(false)
 }
 
 model Advert {
@@ -69,30 +72,30 @@ model Advert {
   province        Province? @relation(fields: [provinceId], references: [id])
   provinceId      String?
   likes           Like[]
-  createdAt       DateTime?  @default(now())
+  createdAt       DateTime? @default(now())
 }
 
 model Like {
-  id       String @id @default(uuid())
-  user     User   @relation(fields: [userId], references: [id])
-  userId   String
-  advert   Advert @relation(fields: [advertId], references: [id], onDelete: Cascade)
-  advertId String
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  advert    Advert    @relation(fields: [advertId], references: [id], onDelete: Cascade)
+  advertId  String
   createdAt DateTime? @default(now())
 }
 
 model Category {
-  id      String   @id @default(uuid())
-  name    String
-  slug    String?
-  adverts Advert[]
+  id        String    @id @default(uuid())
+  name      String
+  slug      String?
+  adverts   Advert[]
   createdAt DateTime? @default(now())
 }
 
 model Province {
-  id      String   @id @default(uuid())
-  name    String
-  adverts Advert[]
+  id        String    @id @default(uuid())
+  name      String
+  adverts   Advert[]
   createdAt DateTime? @default(now())
 }
 
@@ -105,8 +108,8 @@ model Paket {
   duration         Int?
   kuota            Int?
   expired          DateTime?
-  createdAt        DateTime?           @default(now())
-  updatedAt        DateTime?           @updatedAt
+  createdAt        DateTime?          @default(now())
+  updatedAt        DateTime?          @updatedAt
   RiwayatPembelian RiwayatPembelian[]
 }
 

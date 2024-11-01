@@ -5,6 +5,33 @@ const createRoomChat = async (req, res) => {
     const { userId, friendId } = req.body;
 
     try {
+        const existingRoom = await prisma.room.findFirst({
+            where: {
+                users: {
+                    some: {
+                        id: {
+                            in: [friendId]
+                        }
+                    }
+                }
+            }
+        })
+
+        if (existingRoom) {
+            const updateRoom = await prisma.room.update({
+                where: {
+                    id: existingRoom.id
+                },
+                data: {
+                    createdAt: new Date()
+                }
+            })
+
+            return res.status(200).json({
+                message: 'success update room'
+            })
+        }
+
         const createRoom = await prisma.room.create({
             data: {
                 users: { connect: [{ id: userId }, { id: friendId }] }
@@ -32,14 +59,12 @@ const getRoomChat = async (req, res) => {
                 }
             },
             include: {
-                users: {
-                    include: {
-                        messages: {
-                            orderBy: {
-                                createdAt: 'desc'
-                            }
-                        }
-                    }
+                users: true,
+                messages: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1
                 }
             },
             orderBy: {
@@ -62,7 +87,6 @@ const getRoomChat = async (req, res) => {
     }
 }
 
-
 const getChat = async (req, res) => {
     const { data } = req.body;
 
@@ -73,9 +97,9 @@ const getChat = async (req, res) => {
             },
             include: {
                 messages: {
-                    include: {
-                        sender: true
-                    }
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
                 },
                 users: {
                     where: {
@@ -84,6 +108,19 @@ const getChat = async (req, res) => {
                         }
                     }
                 }
+            },
+        });
+
+        await prisma.message.updateMany({
+            where: {
+                roomId: data.room.id,
+                senderId: {
+                    not: data.userid
+                },
+                read: false
+            },
+            data: {
+                read: true
             }
         });
 
@@ -111,6 +148,15 @@ const sendChatMessage = async (req, res) => {
             }
         });
 
+        const updateCreated = await prisma.room.update({
+            where: {
+                id: data.roomId
+            },
+            data: {
+                createdAt: new Date()
+            }
+        })
+
         res.status(200).json({
             sendMessage,
             message: 'success create message'
@@ -124,4 +170,65 @@ const sendChatMessage = async (req, res) => {
 
 }
 
-module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat }
+const getNotifUnread = async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(200).json({
+            unreadCount: 0,
+        })
+    }
+
+    const rooms = await prisma.room.findMany({
+        where: {
+            users: {
+                some: {
+                    id: userId
+                }
+            }
+        },
+        include: {
+            messages: {
+                where: {
+                    senderId: {
+                        not: userId
+                    },
+                    read: false
+                }
+            }
+        }
+    });
+
+    const unreadCount = rooms.reduce((acc, room) => {
+        return acc + room.messages.length;
+    }, 0);
+
+    res.json({
+        unreadCount
+    });
+};
+
+const deleteOneMessage = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedMessage = await prisma.message.delete({
+            where: {
+                id
+            }
+        })
+
+        res.status(200).json({
+            message: 'success delete message'
+        })
+    } catch (error) {
+        console.log('failed delete message', error);
+        res.status(500).json({
+            message: 'failed delete message'
+        })
+    }
+}
+
+
+
+module.exports = { getRoomChat, getChat, sendChatMessage, createRoomChat, getNotifUnread, deleteOneMessage }

@@ -90,6 +90,17 @@ const riwayatPembelian = async (req, res) => {
 const midtransNotification = async (req, res) => {
     const { order_id, transaction_status } = req.body;
 
+    const getDateForExpire = (day) => {
+        let currentDate = new Date();
+
+        let highlightExpiry = new Date();
+        highlightExpiry.setDate(currentDate.getDate() + day);
+
+        let formattedExpiry = highlightExpiry.toISOString()
+
+        return formattedExpiry
+    }
+
     try {
         const findTransaksi = await prisma.riwayatPembelian.findFirst({
             where: {
@@ -106,7 +117,7 @@ const midtransNotification = async (req, res) => {
             }
         })
 
-        if(transaction_status === 'settlement' || transaction_status === 'capture') {
+        if (transaction_status === 'settlement' || transaction_status === 'capture') {
             const findPaket = await prisma.paket.findUnique({
                 where: {
                     id: findTransaksi.paketId
@@ -119,6 +130,24 @@ const midtransNotification = async (req, res) => {
                 }
             })
 
+            if (findPaket.type === "PREMIUM") {
+                const updatePaket = await prisma.user.update({
+                    where: {
+                        id: findTransaksi.userId
+                    },
+                    data: {
+                        isPremium: true,
+                        premiumExpiry: getDateForExpire(findPaket.duration),
+                        kuota_iklan: {
+                            increment: 100
+                        },
+                        kuota_sorot: {
+                            increment: 100
+                        }
+                    }
+                })
+            }
+
             if (findPaket.type === "IKLAN") {
                 const updatePaket = await prisma.user.update({
                     where: {
@@ -128,7 +157,9 @@ const midtransNotification = async (req, res) => {
                         kuota_iklan: getCurrentUserKuota.kuota_iklan + findPaket.kuota,
                     }
                 })
-            } else {
+            }
+
+            if (findPaket.type === "SOROT") {
                 const updatePaket = await prisma.user.update({
                     where: {
                         id: findTransaksi.userId
