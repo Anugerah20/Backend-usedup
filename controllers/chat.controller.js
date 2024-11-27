@@ -7,15 +7,12 @@ const createRoomChat = async (req, res) => {
     try {
         const existingRoom = await prisma.room.findFirst({
             where: {
-                users: {
-                    some: {
-                        id: {
-                            in: [friendId]
-                        }
-                    }
-                }
-            }
-        })
+                AND: [
+                    { users: { some: { id: userId } } },
+                    { users: { some: { id: friendId } } },
+                ],
+            },
+        });
 
         if (existingRoom) {
             const updateRoom = await prisma.room.update({
